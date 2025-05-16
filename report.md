@@ -1,4 +1,4 @@
-# 实验二报告：基于egui和petgraph的图可视化实现
+# 实验二报告
 
 ## 1. 个人信息
 
@@ -125,22 +125,22 @@ ui.add(&mut DefaultGraphView::new(&mut self.g));
 ```rust
 #[derive(Default)]
 pub struct InteractiveApp {
-    graph: Graph<MyNodeData, MyEdgeData>,  // 自定义节点和边类型
-    selected_node: Option<NodeIndex>,      // 当前选中节点
-    layout: Box<dyn Layout>,               // 布局算法
+    graph: Graph<MyNodeData, MyEdgeData>,
+    selected_node: Option<NodeIndex>, 
+    layout: Box<dyn Layout>,  
 }
 
 #[derive(Default, Clone)]
 struct MyNodeData {
-    label: String,        // 节点标签
-    position: Pos2,       // 屏幕坐标
-    color: Color32,       // 显示颜色
+    label: String, 
+    position: Pos2,
+    color: Color32,
 }
 
 #[derive(Default, Clone)]
 struct MyEdgeData {
-    weight: f32,          // 边权重
-    color: Color32,       // 边颜色
+    weight: f32,    
+    color: Color32,   
 }
 ```
 
@@ -148,21 +148,18 @@ struct MyEdgeData {
 
 ```rust
 impl InteractiveApp {
-    /// 处理节点拖拽事件
     fn handle_drag(&mut self, node_idx: NodeIndex, new_pos: Pos2) {
         if let Some(node) = self.graph.node_weight_mut(node_idx) {
             node.data.position = new_pos;
         }
     }
 
-    /// 查找最短路径（Dijkstra算法）
     fn find_shortest_path(&mut self, start: NodeIndex, end: NodeIndex) {
         let petgraph = self.graph.to_petgraph();
         let path = dijkstra(&petgraph, start, Some(end), |e| {
             e.weight().weight as usize
         });
         
-        // 高亮显示路径
         self.highlight_path(path);
     }
 }
@@ -174,14 +171,12 @@ impl InteractiveApp {
 impl App for InteractiveApp {
     fn update(&mut self, ctx: &Context, _: &mut eframe::Frame) {
         CentralPanel::default().show(ctx, |ui| {
-            // 使用自定义样式渲染图
             let view = GraphView::new(&mut self.graph)
                 .with_node_style(|n| Circle::new(n.position, 15.0).color(n.color))
                 .with_edge_style(|e| Line::new(e.weight).color(e.color));
             
             ui.add(view);
             
-            // 添加控制面板
             Window::new("控制面板").show(ctx, |ui| {
                 ui.label("节点操作：");
                 if ui.button("添加节点").clicked() {
@@ -201,16 +196,18 @@ impl App for InteractiveApp {
 }
 ```
 
+### 3.4 运行截图
+
+![alt text](image-1.png)
+
 ## 4. 版本控制记录
 
-使用以下命令初始化Git仓库并提交更改：
+提交更改：
+
+![alt text](image-2.png)
 
 ```bash
-cd TOSS2025-lab01-软2304-刘子兴-20232241089/20232241089/lab02
-git init
-git add .
-git commit -m "实验二初始提交：完成基础图可视化实现"
-git commit -m "实验二功能更新：添加最短路径算法可视化"
+https://github.com/consummater/lab02
 ```
 
 ## 5. 实验结果验证
